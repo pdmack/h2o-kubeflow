@@ -24,9 +24,9 @@ local networkSpec = networkPolicy.mixin.spec;
         spec: {
           ports: [
             {
-              port: 8080,
+              port: 5555,
               protocol: "TCP",
-              targetPort: 8080,
+              targetPort: 5555,
             },
           ],
           selector: labels,
@@ -35,15 +35,36 @@ local networkSpec = networkPolicy.mixin.spec;
         },
       },
 
-      modelServer(name, namespace, memory, cpu, pvcName, modelServerImage, licenseLocation, mojoLocation, labels={ app: name },):
+      modelPersistentVolumeClaim(name, namespace, pvcSize, labels={ app: name }): {
+        kind: "PersistentVolumeClaim",
+        apiVersion: "v1",
+        metadata: {
+          labels: labels,
+          name: name,
+          namespace: namespace,
+        },
+        spec: {
+          accessModes: [
+            "ReadWriteOnce",
+          ],
+          volumeMode: "Filesystem",
+          resources: {
+            requests: {
+              storage: pvcSize + "Gi",
+            },
+          },
+        },
+      },
+
+      modelServer(name, namespace, memory, cpu, pvcName, configMapName, modelServerImage, licenseLocation, mojoLocation, labels={ app: name },):
         local volume = {
           name: "local-data",
           namespace: namespace,
           emptyDir: {},
         };
-        base(name, namespace, memory, cpu, pvcName, modelServerImage, licenseLocation, mojoLocation, labels),
+        base(name, namespace, memory, cpu, pvcName, configMapName, modelServerImage, licenseLocation, mojoLocation, labels),
 
-      local base(name, namespace, memory, cpu, pvcName, modelServerImage, licenseLocation, mojoLocation, labels) =
+      local base(name, namespace, memory, cpu, pvcName, configMapName, modelServerImage, licenseLocation, mojoLocation, labels) =
         {
           apiVersion: "extensions/v1beta1",
           kind: "Deployment",
@@ -79,10 +100,15 @@ local networkSpec = networkPolicy.mixin.spec;
                         name: "DEP_NAME",
                         value: name
                       }
-                    ],
+                    ] + if configMapName != "null" then [
+                      {
+                        name: "DRIVERLESS_AI_LICENSE_FILE",
+                        value: "/config/license.sig"
+                      }
+                    ] else [],
                     ports: [
                       {
-                        containerPort: 8080,
+                        containerPort: 5555,
                         protocol: "TCP"
                       },
                     ],
@@ -91,7 +117,7 @@ local networkSpec = networkPolicy.mixin.spec;
                     ],
                     args: [
                       "-c",
-                      "./mojo-startup.sh " + licenseLocation + " " + mojoLocation,
+                      "./mojo-startup.sh " + licenseLocation + " " + mojoLocation + " " + memory,
                     ],
                     workingDir: "/",
                     resources: {
@@ -106,22 +132,34 @@ local networkSpec = networkPolicy.mixin.spec;
                     },
                     volumeMounts: [
                       {
-                        mountPath: "/mojo-models",
-                        name: name + "-pvc",
+                        mountPath: "/tmp",
+                        name: pvcName + "-pvc",
                       }
-                    ],
+                    ] + if configMapName != "null" then [
+                      {
+                        mountPath: "/config",
+                        name: "mojo-configmap-" + configMapName
+                      }
+                    ] else [],
                     stdin: true,
                     tty: true,
                   },
                 ],
                 volumes: [
                   {
-                    name: name + "-pvc",
+                    name: pvcName + "-pvc",
                     persistentVolumeClaim: {
                       claimName: pvcName,
                     },
                   },
-                ],
+                ] + if configMapName != "null" then [
+                  {
+                    name: "mojo-configmap-" + configMapName,
+                    configMap: {
+                      name: configMapName,
+                    },
+                  }
+                ] else [],
                 dnsPolicy: "ClusterFirst",
                 restartPolicy: "Always",
                 schedulerName: "default-scheduler",
