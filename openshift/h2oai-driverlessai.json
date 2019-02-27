@@ -7,7 +7,6 @@
       "metadata": {
         "labels": {
           "app": "h2oai-driverlessai",
-          "ksonnet.io/component": "h2oai-driverlessai"
         },
         "name": "h2oai-driverlessai",
         "namespace": "h2o"
@@ -30,7 +29,6 @@
       "metadata": {
         "labels": {
           "app": "h2oai-driverlessai",
-          "ksonnet.io/component": "h2oai-driverlessai"
         },
         "name": "h2oai-driverlessai",
         "namespace": "h2o"
@@ -56,7 +54,6 @@
       "metadata": {
         "labels": {
           "app": "h2oai-driverlessai",
-          "ksonnet.io/component": "h2oai-driverlessai"
         },
         "name": "h2oai-driverlessai",
         "namespace": "h2o"
