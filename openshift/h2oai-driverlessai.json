@@ -3,32 +3,10 @@
   "items": [
     {
       "apiVersion": "v1",
-      "kind": "PersistentVolumeClaim",
-      "metadata": {
-        "labels": {
-          "app": "h2oai-driverlessai",
-        },
-        "name": "h2oai-driverlessai",
-        "namespace": "h2o"
-      },
-      "spec": {
-        "accessModes": [
-          "ReadWriteOnce"
-        ],
-        "resources": {
-          "requests": {
-            "storage": "50Gi"
-          }
-        },
-        "volumeMode": "Filesystem"
-      }
-    },
-    {
-      "apiVersion": "v1",
       "kind": "Service",
       "metadata": {
         "labels": {
-          "app": "h2oai-driverlessai",
+          "app": "h2oai-driverlessai"
         },
         "name": "h2oai-driverlessai",
         "namespace": "h2o"
@@ -43,9 +21,7 @@
         ],
         "selector": {
           "app": "h2oai-driverlessai"
-        },
-        "sessionAffinity": "ClientIP",
-        "type": "LoadBalancer"
+        }
       }
     },
     {
@@ -53,7 +29,7 @@
       "kind": "Deployment",
       "metadata": {
         "labels": {
-          "app": "h2oai-driverlessai",
+          "app": "h2oai-driverlessai"
         },
         "name": "h2oai-driverlessai",
         "namespace": "h2o"

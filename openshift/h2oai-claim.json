@@ -1,0 +1,22 @@
+{
+   "apiVersion":"v1",
+   "kind":"PersistentVolumeClaim",
+   "metadata":{
+      "labels":{
+         "app":"h2oai-driverlessai"
+      },
+      "name":"h2oai-driverlessai",
+      "namespace":"h2o"
+   },
+   "spec":{
+      "accessModes":[
+         "ReadWriteOnce"
+      ],
+      "resources":{
+         "requests":{
+            "storage":"50Gi"
+         }
+      },
+      "volumeMode":"Filesystem"
+   }
+}

@@ -1,0 +1,22 @@
+{
+    "apiVersion": "v1",
+    "kind": "PersistentVolume",
+    "metadata": {
+        "labels": {
+            "type": "local"
+        },
+        "name": "h2o-volume"
+    },
+    "spec": {
+        "accessModes": [
+            "ReadWriteOnce"
+        ],
+        "capacity": {
+            "storage": "50Gi"
+        },
+        "hostPath": {
+            "path": "/tmp/h2o-storage",
+            "type": ""
+        }
+    }
+}
