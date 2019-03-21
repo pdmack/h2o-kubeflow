@@ -14,7 +14,7 @@
       ],
       "resources":{
          "requests":{
-            "storage":"50Gi"
+            "storage":"2Gi"
          }
       },
       "volumeMode":"Filesystem"

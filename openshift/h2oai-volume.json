@@ -12,7 +12,7 @@
             "ReadWriteOnce"
         ],
         "capacity": {
-            "storage": "50Gi"
+            "storage": "2Gi"
         },
         "hostPath": {
             "path": "/tmp/h2o-storage",
